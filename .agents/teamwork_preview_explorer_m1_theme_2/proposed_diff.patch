@@ -1,0 +1,134 @@
+diff --git a/src/app/globals.css b/src/app/globals.css
+--- a/src/app/globals.css
++++ b/src/app/globals.css
+@@ -3,8 +3,30 @@
+ 
+ :root {
+   --background: #f8fafc;
+   --foreground: #0f172a;
++
++  /* Slate hex values matching Tailwind standard palette */
++  --slate-50: #f8fafc;
++  --slate-100: #f1f5f9;
++  --slate-200: #e2e8f0;
++  --slate-300: #cbd5e1;
++  --slate-400: #94a3b8;
++  --slate-500: #64748b;
++  --slate-600: #475569;
++  --slate-700: #334155;
++  --slate-800: #1e293b;
++  --slate-900: #0f172a;
++  --slate-950: #020617;
++
++  /* Custom intermediate shades detected in code */
++  --slate-55: #f6f7f8;
++  --slate-105: #eef0f2;
++  --slate-350: #859bb5;
++  --slate-450: #7c8fa6;
++  --slate-550: #576d85;
++  --slate-555: #5d6f82;
++  --slate-850: #182235;
++
++  /* Background radial glows configuration */
++  --glow-indigo: rgba(99, 102, 241, 0.07);
++  --glow-purple: rgba(139, 92, 246, 0.05);
++  --glow-emerald: rgba(16, 185, 129, 0.04);
+ }
+ 
+ @theme {
+   --color-background: var(--background);
+   --color-foreground: var(--foreground);
+   --font-sans: var(--font-geist-sans), sans-serif;
+   --font-mono: var(--font-geist-mono), monospace;
+ 
+   /* ── Custom color tokens for intermediate shades ── */
+-  /* slate-55: very light slate tint */
+-  --color-slate-55: #f6f7f8;
+-  /* slate-105: very light slate for borders */
+-  --color-slate-105: #eef0f2;
+-  /* slate-450: between slate-400 (#94a3b8) and slate-500 (#64748b) */
+-  --color-slate-450: #7c8fa6;
+-  /* slate-555: between slate-500 (#64748b) and slate-600 (#475569) */
+-  --color-slate-555: #5d6f82;
+-  /* indigo-650: between indigo-600 (#4f46e5) and indigo-700 (#4338ca) */
+-  --color-indigo-650: #4941e0;
++  --color-slate-50: var(--slate-50);
++  --color-slate-100: var(--slate-100);
++  --color-slate-200: var(--slate-200);
++  --color-slate-300: var(--slate-300);
++  --color-slate-400: var(--slate-400);
++  --color-slate-500: var(--slate-500);
++  --color-slate-600: var(--slate-600);
++  --color-slate-700: var(--slate-700);
++  --color-slate-800: var(--slate-800);
++  --color-slate-900: var(--slate-900);
++  --color-slate-950: var(--slate-950);
++
++  --color-slate-55: var(--slate-55);
++  --color-slate-105: var(--slate-105);
++  --color-slate-350: var(--slate-350);
++  --color-slate-450: var(--slate-450);
++  --color-slate-550: var(--slate-550);
++  --color-slate-555: var(--slate-555);
++  --color-slate-850: var(--slate-850);
++
++  --color-indigo-650: #4941e0;
++  --color-amber-605: #d97706;
+ 
+   /* ── Keyframe animations ── */
+   --animate-fade-in: fade-in 0.2s ease-out both;
+@@ -64,45 +86,41 @@
+ body {
+   background-color: var(--background);
+   color: var(--foreground);
+   font-family: var(--font-sans);
+   overflow-x: hidden;
+   background-image:
+-    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.07) 0px, transparent 50%),
+-    radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.05) 0px, transparent 50%),
+-    radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.04) 0px, transparent 50%);
++    radial-gradient(at 0% 0%, var(--glow-indigo) 0px, transparent 50%),
++    radial-gradient(at 100% 0%, var(--glow-purple) 0px, transparent 50%),
++    radial-gradient(at 50% 100%, var(--glow-emerald) 0px, transparent 50%);
+   background-attachment: fixed;
+ }
+ 
+ /* Glassmorphism utility classes */
+-.glass-panel {
++@utility glass-panel {
+   background: rgba(255, 255, 255, 0.75);
+   backdrop-filter: blur(12px);
+   -webkit-backdrop-filter: blur(12px);
+   border: 1px solid rgba(15, 23, 42, 0.06);
+ }
+ 
+-.glass-card {
++@utility glass-card {
+   background: rgba(255, 255, 255, 0.45);
+   backdrop-filter: blur(8px);
+   -webkit-backdrop-filter: blur(8px);
+   border: 1px solid rgba(15, 23, 42, 0.04);
+ }
+ 
+ /* Custom Scrollbar */
+ ::-webkit-scrollbar {
+   width: 8px;
+   height: 8px;
+ }
+ 
+ ::-webkit-scrollbar-track {
+-  background: rgba(15, 23, 42, 0.02);
++  background: var(--color-slate-50);
+ }
+ 
+ ::-webkit-scrollbar-thumb {
+-  background: rgba(99, 102, 241, 0.2);
++  background: var(--color-indigo-200);
+   border-radius: 9999px;
++  border: 2px solid var(--color-slate-50);
+ }
+ 
+ ::-webkit-scrollbar-thumb:hover {
+-  background: rgba(99, 102, 241, 0.4);
++  background: var(--color-indigo-400);
+ }

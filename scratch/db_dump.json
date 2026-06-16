@@ -1,0 +1,256 @@
+{
+  "users": [
+    {
+      "id": "4a026e1a-894c-45d3-9a79-9ed34e1f6472",
+      "name": "Carlos",
+      "lastname": "Validador",
+      "password": "$2b$10$0RzgOtvH2QIPk6jK9s0DHuzqXAjBNiKv3KJdtx2oYiNhce9qPklCC",
+      "email": "admin.carlos@impulsar.com",
+      "whatsappId": "+34 600 000 000",
+      "roleId": 10,
+      "rootsTypeId": null,
+      "emailVerified": null,
+      "image": null,
+      "driveFolderUrl": null,
+      "passportUrl": null,
+      "passportStatus": "Pending",
+      "appointmentDate": null,
+      "registrationMonth": null,
+      "role": {
+        "id": 10,
+        "admin": false,
+        "name": "admin"
+      },
+      "rootsType": null
+    },
+    {
+      "id": "d6821d12-78ff-4bc0-84f0-813598432593",
+      "name": "Yodier",
+      "lastname": "Murillo",
+      "password": "$2b$10$G0hTT5f/OCPAvsRUIzyJ5e.tJVfoK.nTY9wN/8je6cHES8s65z0me",
+      "email": "yodiermurillo@gmail.com",
+      "whatsappId": "+34 600 111 222",
+      "roleId": 10,
+      "rootsTypeId": null,
+      "emailVerified": null,
+      "image": null,
+      "driveFolderUrl": null,
+      "passportUrl": null,
+      "passportStatus": "Pending",
+      "appointmentDate": null,
+      "registrationMonth": null,
+      "role": {
+        "id": 10,
+        "admin": false,
+        "name": "admin"
+      },
+      "rootsType": null
+    },
+    {
+      "id": "8809a549-523c-452c-a9ac-2e51cccdf661",
+      "name": "María",
+      "lastname": "Torres",
+      "password": "$2b$10$EhJri9u0GwUQO42LjBb3TOgrp.mt5FMNMSjHIq7XY3Ah6LjPOeoEy",
+      "email": "m.torres@outlook.com",
+      "whatsappId": "+34 699 888 777",
+      "roleId": 9,
+      "rootsTypeId": null,
+      "emailVerified": null,
+      "image": null,
+      "driveFolderUrl": null,
+      "passportUrl": null,
+      "passportStatus": "Pending",
+      "appointmentDate": null,
+      "registrationMonth": null,
+      "role": {
+        "id": 9,
+        "admin": false,
+        "name": "client"
+      },
+      "rootsType": null
+    },
+    {
+      "id": "d8692959-9b80-4d46-9310-e16dcc93f7b0",
+      "name": "Alejandro",
+      "lastname": "Gómez",
+      "password": "$2b$10$C8ggs4d0.ugN6C7vTYwlquUXS3zKtsm69IUnRD7DX5XBlJ1e2Zg/6",
+      "email": "alejandro.gomez@gmail.com",
+      "whatsappId": "+34 612 345 678",
+      "roleId": 9,
+      "rootsTypeId": 11,
+      "emailVerified": null,
+      "image": null,
+      "driveFolderUrl": "https://drive.google.com/drive/folders/test-drive-url",
+      "passportUrl": null,
+      "passportStatus": "Approved",
+      "appointmentDate": "2026-06-20T00:00:00.000Z",
+      "registrationMonth": "2026-06",
+      "role": {
+        "id": 9,
+        "admin": false,
+        "name": "client"
+      },
+      "rootsType": {
+        "id": 11,
+        "name": "Regularización Comercial Express",
+        "description": null
+      }
+    }
+  ],
+  "rootsTypes": [
+    {
+      "id": 11,
+      "name": "Regularización Comercial Express",
+      "description": null,
+      "rootsTypesSteps": [
+        {
+          "id": 66,
+          "rootsTypeId": 11,
+          "stepId": 18,
+          "isMandatory": false,
+          "shortOrder": 2,
+          "step": {
+            "id": 18,
+            "name": "Documento de Identidad (DNI/NIE/Pasaporte)",
+            "description": "Identificación oficial y vigente"
+          }
+        },
+        {
+          "id": 67,
+          "rootsTypeId": 11,
+          "stepId": 20,
+          "isMandatory": false,
+          "shortOrder": 3,
+          "step": {
+            "id": 20,
+            "name": "Contrato de Adhesión Firmado",
+            "description": null
+          }
+        },
+        {
+          "id": 68,
+          "rootsTypeId": 11,
+          "stepId": 19,
+          "isMandatory": false,
+          "shortOrder": 4,
+          "step": {
+            "id": 19,
+            "name": "Justificante de Ingresos (Nómina Reciente)",
+            "description": null
+          }
+        },
+        {
+          "id": 73,
+          "rootsTypeId": 11,
+          "stepId": 21,
+          "isMandatory": false,
+          "shortOrder": 5,
+          "step": {
+            "id": 21,
+            "name": "ID de Contacto de WhatsApp",
+            "description": null
+          }
+        },
+        {
+          "id": 52,
+          "rootsTypeId": 11,
+          "stepId": 23,
+          "isMandatory": false,
+          "shortOrder": 1,
+          "step": {
+            "id": 23,
+            "name": "Paso de Prueba",
+            "description": "Descripción de prueba"
+          }
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "name": "test",
+      "description": "test",
+      "rootsTypesSteps": [
+        {
+          "id": 69,
+          "rootsTypeId": 12,
+          "stepId": 21,
+          "isMandatory": false,
+          "shortOrder": 5,
+          "step": {
+            "id": 21,
+            "name": "ID de Contacto de WhatsApp",
+            "description": null
+          }
+        },
+        {
+          "id": 54,
+          "rootsTypeId": 12,
+          "stepId": 19,
+          "isMandatory": false,
+          "shortOrder": 1,
+          "step": {
+            "id": 19,
+            "name": "Justificante de Ingresos (Nómina Reciente)",
+            "description": null
+          }
+        },
+        {
+          "id": 60,
+          "rootsTypeId": 12,
+          "stepId": 20,
+          "isMandatory": false,
+          "shortOrder": 5,
+          "step": {
+            "id": 20,
+            "name": "Contrato de Adhesión Firmado",
+            "description": null
+          }
+        },
+        {
+          "id": 62,
+          "rootsTypeId": 12,
+          "stepId": 18,
+          "isMandatory": false,
+          "shortOrder": 4,
+          "step": {
+            "id": 18,
+            "name": "Documento de Identidad (DNI/NIE/Pasaporte)",
+            "description": "Identificación oficial y vigente"
+          }
+        }
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": 19,
+      "name": "Justificante de Ingresos (Nómina Reciente)",
+      "description": null
+    },
+    {
+      "id": 20,
+      "name": "Contrato de Adhesión Firmado",
+      "description": null
+    },
+    {
+      "id": 21,
+      "name": "ID de Contacto de WhatsApp",
+      "description": null
+    },
+    {
+      "id": 22,
+      "name": "Escritura de Constitución",
+      "description": null
+    },
+    {
+      "id": 18,
+      "name": "Documento de Identidad (DNI/NIE/Pasaporte)",
+      "description": "Identificación oficial y vigente"
+    },
+    {
+      "id": 23,
+      "name": "Paso de Prueba",
+      "description": "Descripción de prueba"
+    }
+  ]
+}
