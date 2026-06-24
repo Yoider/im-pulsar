@@ -451,52 +451,169 @@ export default function AdminToolsPanel() {
         <KpiStatsBar clients={clients} rootsTypes={rootsTypes} />
       </div>
 
-      {/* 2-Column Dashboard Layout */}
+      {/* 2-Column Dashboard Layout matching the mockup layout */}
       <div className="flex-grow flex flex-col md:flex-row gap-6 min-h-0">
         
-        {/* Columna Izquierda: Auditoría de Clientes */}
-        <div className="flex-grow md:flex-[2_2_0%] flex flex-col min-h-[450px] md:min-h-0 bg-white border border-brand-200 rounded-card shadow-sm overflow-hidden">
+        {/* Columna Izquierda: Listado/Sidebar lateral de Expedientes (300px) */}
+        <div className="w-full md:w-[300px] flex flex-col bg-white border border-brand-200 rounded-card shadow-sm overflow-hidden flex-shrink-0">
+          <div className="px-5 py-4 bg-brand-50/30 border-b border-brand-100 flex items-center justify-between flex-shrink-0">
+            <h3 className="text-sm font-bold text-brand-900 tracking-tight">Expedientes</h3>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setIsCreateOpen(true)}
+              className="h-6 text-[9px] px-2 shadow-none border border-brand-200 hover:bg-brand-50 text-brand-800 rounded-xl"
+            >
+              + Nuevo
+            </Button>
+          </div>
+          <div className="flex-grow overflow-y-auto p-4 space-y-3">
+            {loading && rootsTypes.length === 0 ? (
+              <div className="py-10 text-center text-brand-500 text-xs">Cargando...</div>
+            ) : (
+              rootsTypes.map((rt) => {
+                const stepsCount = rt.rootsTypesSteps.length;
+                const isSelected = activeKanbanRt?.id === rt.id;
+                // Contar listos
+                const rtClients = clients.filter((c) => c.rootsTypeId === rt.id);
+                const readyClientsCount = rtClients.filter((client) => {
+                  if (!client.steps || client.steps.length === 0) return false;
+                  return client.steps.every((s: any) => s.status === "Approved");
+                }).length;
+
+                return (
+                  <div
+                    key={rt.id}
+                    onClick={() => setActiveKanbanRt(rt)}
+                    className={`p-4 border rounded-card cursor-pointer transition-all duration-200 relative overflow-hidden group flex flex-col justify-between space-y-2 ${
+                      isSelected
+                        ? "bg-purple-100/60 border-purple-400 shadow-sm"
+                        : "bg-white border-brand-200 hover:border-brand-350 hover:bg-brand-50/20"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-bold text-xs text-brand-950 tracking-tight truncate">
+                          {rt.name}
+                        </h4>
+                        <p className="text-[10px] text-brand-400 truncate mt-0.5">
+                          {rt.description || "Sin descripción."}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+                        <span className="text-[8px] px-1.5 py-0.5 bg-brand-100 border border-brand-200/80 text-brand-800 rounded-full font-semibold whitespace-nowrap">
+                          {stepsCount} {stepsCount === 1 ? "paso" : "pasos"}
+                        </span>
+                        {readyClientsCount > 0 && (
+                          <span className="text-[9px] w-4 h-4 flex items-center justify-center bg-purple-600 text-white rounded-full font-bold shadow-xs">
+                            {readyClientsCount}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    {/* Acciones rápidas flotantes al hacer hover */}
+                    <div className="opacity-0 group-hover:opacity-100 flex items-center gap-2 pt-1 transition-opacity duration-200">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleStartEdit(rt);
+                        }}
+                        className="text-[9px] text-purple-700 hover:underline"
+                      >
+                        Editar
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteRt(rt.id);
+                        }}
+                        className="text-[9px] text-rose-600 hover:underline"
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+
+        {/* Columna Derecha: Contenido Dinámico (Tablero Kanban / Auditoría / Pestañas de configuración adicionales) */}
+        <div className="flex-grow flex flex-col bg-white border border-brand-200 rounded-card shadow-sm overflow-hidden min-w-0">
           {/* Header */}
           <div className="px-6 py-4 bg-brand-50/30 border-b border-brand-100 flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-brand-100 flex items-center justify-center text-brand-800 shadow-inner">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-              <div className="text-left">
-                <h3 className="text-sm font-bold text-brand-900 tracking-tight">Auditoría de Clientes</h3>
-                <p className="text-[10px] text-brand-400">Consulta el progreso de los clientes.</p>
-              </div>
+              <h3 className="text-sm font-bold text-brand-900 tracking-tight">
+                {activeKanbanRt ? activeKanbanRt.name : "Auditoría General"}
+              </h3>
             </div>
-            <span className="text-[10px] font-semibold bg-brand-100 text-brand-850 border border-brand-200 px-2 py-0.5 rounded-full">
-              {clients.length} Clientes
-            </span>
+            {/* Tabs secundarias para Estados o Historial */}
+            <div className="flex items-center gap-2 bg-brand-100/60 p-1 rounded-full">
+              <button
+                onClick={() => {
+                  setActiveKanbanRt(null);
+                  setConfigTab("expedientes");
+                }}
+                className={`px-3 py-1 text-[10px] font-bold rounded-full transition-all cursor-pointer ${
+                  !activeKanbanRt && configTab === "expedientes"
+                    ? "bg-white text-brand-950 shadow-xs"
+                    : "text-brand-500 hover:text-brand-800"
+                }`}
+              >
+                Todos
+              </button>
+              <button
+                onClick={() => {
+                  setActiveKanbanRt(null);
+                  setConfigTab("estados");
+                }}
+                className={`px-3 py-1 text-[10px] font-bold rounded-full transition-all cursor-pointer ${
+                  configTab === "estados"
+                    ? "bg-white text-brand-950 shadow-xs"
+                    : "text-brand-500 hover:text-brand-800"
+                }`}
+              >
+                Estados
+              </button>
+              <button
+                onClick={() => {
+                  setActiveKanbanRt(null);
+                  setConfigTab("historial");
+                }}
+                className={`px-3 py-1 text-[10px] font-bold rounded-full transition-all cursor-pointer ${
+                  configTab === "historial"
+                    ? "bg-white text-brand-950 shadow-xs"
+                    : "text-brand-500 hover:text-brand-800"
+                }`}
+              >
+                Historial
+              </button>
+            </div>
           </div>
 
-          {/* Scrollable Content */}
-          <div className="flex-grow overflow-y-auto p-6 min-h-0">
+          {/* Área Principal de Renderizado (Kanban o Listados generales) */}
+          <div className="flex-grow overflow-x-auto p-6 min-h-0 flex flex-col">
             {activeKanbanRt ? (
-              <div className="animate-fade-in space-y-4">
-                <div className="flex items-center justify-between border-b border-brand-200 pb-3">
-                  <div className="text-left">
-                    <h4 className="text-sm font-bold text-brand-950">Tablero Kanban: {activeKanbanRt.name}</h4>
-                    <p className="text-[10px] text-brand-400">Clientes asignados ordenados por prioridad de carga de documentos.</p>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setActiveKanbanRt(null)}
-                    className="h-7 text-[10px] text-brand-700 hover:bg-brand-100 rounded-xl"
-                  >
-                    Cerrar Tablero (Ver Todos)
-                  </Button>
-                </div>
+              <div className="animate-fade-in space-y-4 flex-grow flex flex-col min-w-0">
                 <KanbanBoard
                   clients={clients.filter((c) => c.rootsTypeId === activeKanbanRt.id)}
                   onSelectClient={setSelectedClient}
                   onUpdateStatus={handleUpdateStepStatus}
                 />
+              </div>
+            ) : configTab === "estados" ? (
+              <div className="animate-fade-in">
+                <EstadosSection
+                  statusConfigs={statusConfigs}
+                  loading={loading}
+                  onEditStatus={handleEditStatus}
+                  onDeleteStatus={handleDeleteStatus}
+                />
+              </div>
+            ) : configTab === "historial" ? (
+              <div className="animate-fade-in h-full">
+                <HistorialSection auditLogs={auditLogs} loading={loading} />
               </div>
             ) : (
               <AuditoriaSection
@@ -510,113 +627,6 @@ export default function AdminToolsPanel() {
                 filterRootsType={filterRootsType}
                 setFilterRootsType={setFilterRootsType}
               />
-            )}
-          </div>
-        </div>
-
-        {/* Columna Derecha: Configuraciones (Expedientes / Estados / Historial) */}
-        <div className="flex-grow md:flex-[1_1_0%] flex flex-col min-h-[450px] md:min-h-0 bg-white border border-brand-200 rounded-card shadow-sm overflow-hidden">
-          {/* Header with Navigation Tabs */}
-          <div className="px-6 py-3 bg-brand-50/30 border-b border-brand-100 flex items-center justify-between flex-shrink-0">
-            <div className="flex items-center gap-1.5 bg-brand-100/70 p-1.5 rounded-full">
-              <button
-                onClick={() => setConfigTab("expedientes")}
-                className={`px-5 py-2 text-xs font-bold rounded-full transition-all duration-300 cursor-pointer ${
-                  configTab === "expedientes"
-                    ? "bg-white text-brand-950 shadow-sm"
-                    : "text-brand-600 hover:text-brand-850 hover:bg-white/30"
-                }`}
-              >
-                Expedientes
-              </button>
-              <button
-                onClick={() => setConfigTab("estados")}
-                className={`px-5 py-2 text-xs font-bold rounded-full transition-all duration-300 cursor-pointer ${
-                  configTab === "estados"
-                    ? "bg-white text-brand-950 shadow-sm"
-                    : "text-brand-600 hover:text-brand-850 hover:bg-white/30"
-                }`}
-              >
-                Estados
-              </button>
-              <button
-                onClick={() => setConfigTab("historial")}
-                className={`px-5 py-2 text-xs font-bold rounded-full transition-all duration-300 cursor-pointer ${
-                  configTab === "historial"
-                    ? "bg-white text-brand-950 shadow-sm"
-                    : "text-brand-600 hover:text-brand-850 hover:bg-white/30"
-                }`}
-              >
-                Historial
-              </button>
-            </div>
-
-            {/* Context-aware Button Actions */}
-            {configTab === "expedientes" ? (
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => setIsCreateOpen(true)}
-                  className="h-7 text-[10px] px-2.5 shadow-none border border-brand-200 hover:bg-brand-50 text-brand-800 rounded-xl"
-                >
-                  + Nuevo Expediente
-                </Button>
-                <span className="text-[10px] font-semibold bg-brand-100 text-brand-850 border border-brand-200 px-2 py-0.5 rounded-full hidden sm:inline-block">
-                  {rootsTypes.length}
-                </span>
-              </div>
-            ) : configTab === "estados" ? (
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => {
-                    setIsEditingStatus(false);
-                    setStatusId("");
-                    setStatusLabel("");
-                    setStatusColor("#FAF7FD");
-                    setStatusTextColor("#381D4E");
-                    setIsStatusFormOpen(true);
-                  }}
-                  className="h-7 text-[10px] px-2.5 shadow-none border border-brand-200 hover:bg-brand-50 text-brand-800 rounded-xl"
-                >
-                  + Nuevo Estado
-                </Button>
-                <span className="text-[10px] font-semibold bg-brand-100 text-brand-850 border border-brand-200 px-2 py-0.5 rounded-full hidden sm:inline-block">
-                  {statusConfigs.length}
-                </span>
-              </div>
-            ) : null}
-          </div>
-
-          {/* Scrollable Content */}
-          <div className="flex-grow overflow-y-auto p-6 min-h-0">
-            {configTab === "expedientes" ? (
-              <div className="animate-fade-in">
-                <ExpedientesSection
-                  rootsTypes={rootsTypes}
-                  clients={clients}
-                  loading={loading}
-                  onActiveRt={setActiveKanbanRt}
-                  onStartEdit={handleStartEdit}
-                  onDeleteRt={handleDeleteRt}
-                  onCreateClick={() => setIsCreateOpen(true)}
-                />
-              </div>
-            ) : configTab === "estados" ? (
-              <div className="animate-fade-in">
-                <EstadosSection
-                  statusConfigs={statusConfigs}
-                  loading={loading}
-                  onEditStatus={handleEditStatus}
-                  onDeleteStatus={handleDeleteStatus}
-                />
-              </div>
-            ) : (
-              <div className="animate-fade-in h-full">
-                <HistorialSection auditLogs={auditLogs} loading={loading} />
-              </div>
             )}
           </div>
         </div>

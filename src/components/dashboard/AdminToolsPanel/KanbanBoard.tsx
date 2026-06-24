@@ -88,42 +88,60 @@ export default function KanbanBoard({
                   <div
                     key={client.id}
                     onClick={() => onSelectClient(client)}
-                    className="p-3.5 bg-white border border-brand-100 hover:border-brand-350 rounded-xl shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer space-y-3 group relative overflow-hidden"
+                    className="p-4 bg-white border border-brand-100 hover:border-brand-350 hover:shadow-md rounded-xl transition-all duration-200 cursor-pointer flex gap-3.5 items-start group relative overflow-hidden"
                   >
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <h5 className="text-xs font-bold text-brand-900 group-hover:text-brand-950 truncate max-w-[80%]">
-                          {client.name} {client.lastname || ""}
-                        </h5>
-                        {client.lastDocumentValidationAt && (
-                          <span className="w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-emerald-100 animate-pulse" title="Prioridad alta por validación" />
-                        )}
-                      </div>
-                      <p className="text-[10px] text-brand-400 truncate">{client.email}</p>
+                    {/* Lado Izquierdo: Avatar circular */}
+                    <div className="w-11 h-11 rounded-full bg-purple-100 border border-purple-200 flex-shrink-0 flex items-center justify-center text-purple-700 font-extrabold text-xs shadow-inner">
+                      {client.image ? (
+                        <img
+                          src={client.image}
+                          alt={client.name}
+                          className="w-full h-full rounded-full object-cover"
+                        />
+                      ) : (
+                        <span>
+                          {client.name ? client.name[0] : ""}{client.lastname ? client.lastname[0] : ""}
+                        </span>
+                      )}
                     </div>
 
-                    {/* Sub-steps details inside Card */}
-                    {totalSteps > 0 && (
-                      <div className="space-y-1.5 pt-1">
-                        <div className="flex items-center justify-between text-[9px] font-medium text-brand-500">
-                          <span>Documentos validados</span>
-                          <span>{completedCount}/{totalSteps}</span>
+                    {/* Lado Derecho: Información básica del cliente */}
+                    <div className="flex-1 min-w-0 space-y-2">
+                      <div className="space-y-0.5">
+                        <div className="flex items-center justify-between gap-1">
+                          <h5 className="text-[11px] font-bold text-brand-950 truncate max-w-[85%]">
+                            {client.name} {client.lastname || ""}
+                          </h5>
+                          {client.lastDocumentValidationAt && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" title="Prioridad de carga activa" />
+                          )}
                         </div>
-                        <div className="w-full bg-brand-100 rounded-full h-1">
-                          <div
-                            className="bg-brand-600 h-1 rounded-full transition-all duration-300"
-                            style={{ width: `${(completedCount / totalSteps) * 100}%` }}
-                          />
-                        </div>
+                        <p className="text-[9px] text-brand-400 truncate">{client.email}</p>
                       </div>
-                    )}
 
-                    {/* Badge alert if waiting for verification */}
-                    {client.steps.some((s) => s.status === "Uploaded") && (
-                      <div className="text-[9px] text-blue-700 bg-blue-50 border border-blue-150 px-2 py-1 rounded-lg font-medium inline-block animate-pulse">
-                        Documentos subidos esperando revisión
-                      </div>
-                    )}
+                      {/* Progreso de subpasos */}
+                      {totalSteps > 0 && (
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between text-[8px] font-medium text-brand-400">
+                            <span>Pasos validados</span>
+                            <span>{completedCount}/{totalSteps}</span>
+                          </div>
+                          <div className="w-full bg-brand-100/70 rounded-full h-1">
+                            <div
+                              className="bg-purple-600 h-1 rounded-full transition-all duration-300"
+                              style={{ width: `${(completedCount / totalSteps) * 100}%` }}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Notificación si hay documentos por validar */}
+                      {client.steps.some((s) => s.status === "Uploaded") && (
+                        <span className="text-[8px] inline-block font-semibold bg-blue-50 text-blue-600 border border-blue-100 px-1.5 py-0.5 rounded-md animate-pulse">
+                          Revisión pendiente
+                        </span>
+                      )}
+                    </div>
                   </div>
                 );
               })}
