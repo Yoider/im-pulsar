@@ -21,6 +21,7 @@ interface RootsType {
 
 interface ExpedientesSectionProps {
   rootsTypes: RootsType[];
+  clients: any[];
   loading: boolean;
   onActiveRt: (rt: RootsType) => void;
   onStartEdit: (rt: RootsType) => void;
@@ -30,6 +31,7 @@ interface ExpedientesSectionProps {
 
 export default function ExpedientesSection({
   rootsTypes,
+  clients,
   loading,
   onActiveRt,
   onStartEdit,
@@ -47,6 +49,7 @@ export default function ExpedientesSection({
             <ExpedienteCard
               key={rt.id}
               rootsType={rt}
+              clients={clients.filter((c) => c.rootsTypeId === rt.id)}
               onClick={() => onActiveRt(rt)}
               onEdit={() => onStartEdit(rt)}
               onDelete={() => onDeleteRt(rt.id)}

@@ -20,7 +20,9 @@ model RootsType {
   description     String?
   rootsTypesSteps RootsTypesSteps[]
   users           User[]
+  processHistoryList ProcessHistory[]
 }
+
 
 model User {
   id                    String                @id @default(uuid())
@@ -47,10 +49,12 @@ model User {
   appointmentDate       DateTime?
   registrationMonth     String?
   consentGiven          Boolean               @default(false)
+  lastDocumentValidationAt DateTime?
 
   // Relaciones para AuditLog
   performedActions      AuditLog[]            @relation("PerformedActions")
   clientAuditLogs       AuditLog[]            @relation("ClientAuditLogs")
+  processHistoryList    ProcessHistory[]
 }
 
 model Account {
@@ -95,6 +99,7 @@ model Step {
   geminiInstructions String?
   rootsTypesSteps RootsTypesSteps[]
   progress        UserProcessProgress[]
+  processHistoryList ProcessHistory[]
 }
 
 model RootsTypesSteps {
@@ -166,3 +171,18 @@ model WhatsAppMessage {
 
   @@index([whatsappId])
 }
+
+model ProcessHistory {
+  id          String   @id @default(uuid())
+  userId      String
+  rootsTypeId Int
+  stepId      Int?     // Paso específico si aplica
+  status      String   // El estado del proceso o paso
+  comments    String?  // Observaciones de la transición
+  createdAt   DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rootsType RootsType @relation(fields: [rootsTypeId], references: [id], onDelete: Cascade)
+  step      Step?     @relation(fields: [stepId], references: [id], onDelete: SetNull)
+}
+

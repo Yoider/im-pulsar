@@ -18,13 +18,20 @@ interface RootsType {
 
 interface ExpedienteCardProps {
   rootsType: RootsType;
+  clients?: any[];
   onClick: () => void;
   onEdit: (e: React.MouseEvent) => void;
   onDelete: (e: React.MouseEvent) => void;
 }
 
-export default function ExpedienteCard({ rootsType, onClick, onEdit, onDelete }: ExpedienteCardProps) {
+export default function ExpedienteCard({ rootsType, clients = [], onClick, onEdit, onDelete }: ExpedienteCardProps) {
   const stepsCount = rootsType.rootsTypesSteps.length;
+
+  // Contar cuántos clientes han completado (Aprobado) la carga de todos los pasos/documentos requeridos
+  const readyClientsCount = clients.filter((client) => {
+    if (!client.steps || client.steps.length === 0) return false;
+    return client.steps.every((s: any) => s.status === "Approved");
+  }).length;
 
   return (
     <div
@@ -39,6 +46,14 @@ export default function ExpedienteCard({ rootsType, onClick, onEdit, onDelete }:
           <span className="text-[9px] px-2 py-0.5 bg-brand-100 border border-brand-200/85 text-brand-800 rounded-full font-semibold whitespace-nowrap">
             {stepsCount} {stepsCount === 1 ? "paso" : "pasos"}
           </span>
+          {readyClientsCount > 0 && (
+            <span 
+              className="text-[10px] w-5 h-5 flex items-center justify-center bg-purple-600 text-white rounded-full font-bold shadow-xs animate-bounce"
+              title={`${readyClientsCount} clientes listos para el siguiente paso`}
+            >
+              {readyClientsCount}
+            </span>
+          )}
         </div>
         <p className="text-[11px] text-brand-500 truncate pr-6">
           {rootsType.description || "Sin descripción disponible."}

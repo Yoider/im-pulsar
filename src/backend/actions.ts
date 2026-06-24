@@ -36,6 +36,7 @@ export interface ClientData {
   passportStatus?: string | null;
   appointmentDate?: Date | null;
   registrationMonth?: string | null;
+  lastDocumentValidationAt?: Date | null;
 }
 
 export async function getUsersAction(): Promise<ClientData[]> {
@@ -110,9 +111,11 @@ export async function getUsersAction(): Promise<ClientData[]> {
         passportUrl: client.passportUrl,
         passportStatus: client.passportStatus,
         appointmentDate: client.appointmentDate,
-        registrationMonth: client.registrationMonth
+        registrationMonth: client.registrationMonth,
+        lastDocumentValidationAt: client.lastDocumentValidationAt
       };
     });
+
   } catch (error) {
     console.error("Error in getUsersAction:", error);
     return [];
@@ -604,6 +607,11 @@ export async function updateUserStepStatusAction(userId: string, stepId: number,
       where: { userId, stepId }
     });
     
+    // Obtener información adicional del cliente para ProcessHistory
+    const userObj = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+    
     if (progress) {
       await prisma.userProcessProgress.update({
         where: { id: progress.id },
@@ -634,6 +642,30 @@ export async function updateUserStepStatusAction(userId: string, stepId: number,
         newValues: { status }
       });
     }
+
+    // Registrar historial del proceso
+    if (userObj && userObj.rootsTypeId) {
+      await prisma.processHistory.create({
+        data: {
+          userId,
+          rootsTypeId: userObj.rootsTypeId,
+          stepId,
+          status,
+          comments: `Estado del paso actualizado a ${status}`
+        }
+      });
+    }
+
+    // Si el estado es "Approved", actualizar lastDocumentValidationAt en el usuario
+    if (status === "Approved") {
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          lastDocumentValidationAt: new Date()
+        }
+      });
+    }
+
     revalidatePath("/");
   } catch (error) {
     console.error("Error in updateUserStepStatusAction:", error);

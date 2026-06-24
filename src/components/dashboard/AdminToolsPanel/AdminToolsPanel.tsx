@@ -34,6 +34,8 @@ import {
   AuditLogData,
 } from "@/backend/actions";
 import HistorialSection from "./HistorialSection";
+import KanbanBoard from "./KanbanBoard";
+
 
 interface RootsType {
   id: number;
@@ -85,8 +87,10 @@ export default function AdminToolsPanel() {
 
   // Modal control states
   const [activeRt, setActiveRt] = useState<RootsType | null>(null);
+  const [activeKanbanRt, setActiveKanbanRt] = useState<RootsType | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
+
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
   const [viewerTitle, setViewerTitle] = useState<string>("");
 
@@ -563,12 +567,39 @@ export default function AdminToolsPanel() {
 
           {/* Scrollable Content */}
           <div className="flex-grow overflow-y-auto p-6 min-h-0">
-            {configTab === "expedientes" ? (
+            {activeKanbanRt ? (
+              <div className="animate-fade-in space-y-4">
+                <div className="flex items-center justify-between border-b border-brand-200 pb-3">
+                  <div className="text-left">
+                    <h4 className="text-sm font-bold text-brand-950">Tablero Kanban: {activeKanbanRt.name}</h4>
+                    <p className="text-[10px] text-brand-400">Progreso ordenado por prioridad dinámica de documentos validados.</p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setActiveKanbanRt(null)}
+                    className="h-7 text-[10px] text-brand-700 hover:bg-brand-100 rounded-xl"
+                  >
+                    Volver a lista
+                  </Button>
+                </div>
+                <KanbanBoard
+                  clients={clients.filter((c) => c.rootsTypeId === activeKanbanRt.id)}
+                  steps={activeKanbanRt.rootsTypesSteps.map((rts) => ({
+                    id: rts.step.id,
+                    name: rts.step.name,
+                  }))}
+                  onSelectClient={setSelectedClient}
+                  onUpdateStatus={handleUpdateStepStatus}
+                />
+              </div>
+            ) : configTab === "expedientes" ? (
               <div className="animate-fade-in">
                 <ExpedientesSection
                   rootsTypes={rootsTypes}
+                  clients={clients}
                   loading={loading}
-                  onActiveRt={setActiveRt}
+                  onActiveRt={setActiveKanbanRt}
                   onStartEdit={handleStartEdit}
                   onDeleteRt={handleDeleteRt}
                   onCreateClick={() => setIsCreateOpen(true)}
@@ -592,6 +623,7 @@ export default function AdminToolsPanel() {
         </div>
 
       </div>
+
 
       {/* ========================================== */}
       {/* SYSTEM MODALS                              */}
