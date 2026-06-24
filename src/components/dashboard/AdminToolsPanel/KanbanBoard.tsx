@@ -5,51 +5,58 @@ import { ClientData } from "@/backend/actions";
 
 interface KanbanBoardProps {
   clients: ClientData[];
-  steps: { id: number; name: string }[];
   onSelectClient: (client: ClientData) => void;
   onUpdateStatus: (userId: string, stepId: number, status: string) => void;
 }
 
 export default function KanbanBoard({
   clients,
-  steps,
   onSelectClient,
   onUpdateStatus,
 }: KanbanBoardProps) {
-  // Las columnas serán: 1. Sin Registrar, luego cada paso del expediente, y finalmente 3. Completado
-  // Organizaremos los clientes en columnas basadas en su progreso
-  // Para hacerlo interactivo y ordenado por prioridad dinámica:
-  // Si un cliente tiene lastDocumentValidationAt, lo ordenaremos antes que otros en columnas posteriores.
-  
-  // Determinamos el paso activo más alto aprobado para clasificar la columna del cliente
-  const getClientColumnId = (client: ClientData) => {
-    if (!client.steps || client.steps.length === 0) return "inicio";
-    
-    // Buscar el último paso aprobado
-    const approvedSteps = client.steps.filter((s) => s.status === "Approved");
-    if (approvedSteps.length === client.steps.length) {
-      return "completado";
-    }
-    
-    // Su columna activa es el primer paso que no está aprobado
-    const nextStep = client.steps.find((s) => s.status !== "Approved");
-    return nextStep ? `step-${nextStep.id}` : "inicio";
-  };
-
-  // Agrupar columnas
+  // Las 4 etapas globales recomendadas y aprobadas:
+  // 1: Inicio y Registro
+  // 2: Carga de Documentación
+  // 3: Expediente Enviado al Socio
+  // 4: Resolución del Socio
   const columns = [
-    { id: "inicio", title: "Registro e Inicio" },
-    ...steps.map((s) => ({ id: `step-${s.id}`, title: s.name })),
-    { id: "completado", title: "Expediente Completo" },
+    { id: 1, title: "Inicio y Registro" },
+    { id: 2, title: "Carga de Documentación" },
+    { id: 3, title: "Expediente Enviado al Socio" },
+    { id: 4, title: "Resolución del Socio" },
   ];
+
+  // Regla de clasificación relacional para colocar a cada cliente en su respectiva etapa global
+  const getClientStageId = (client: ClientData) => {
+    // Si el cliente no tiene expediente asignado o no tiene pasos
+    if (!client.rootsTypeId || !client.steps || client.steps.length === 0) {
+      return 1; // Inicio y Registro
+    }
+
+    const totalSteps = client.steps.length;
+    const approvedSteps = client.steps.filter((s) => s.status === "Approved").length;
+
+    // Si tiene todos los pasos individuales aprobados, avanza a la siguiente fase global
+    if (approvedSteps === totalSteps) {
+      // Si el expediente ya está validado por completo, pero aún falta la resolución final del socio
+      // (Podemos verificar el pasaporte u otra propiedad final como indicador de la resolución)
+      if (client.passportStatus === "Approved" || client.appointmentDate) {
+        return 4; // Resolución del Socio
+      }
+      return 3; // Expediente Enviado al Socio
+    }
+
+    // Si tiene pasos pendientes o cargados en revisión
+    return 2; // Carga de Documentación
+  };
 
   return (
     <div className="w-full flex gap-6 overflow-x-auto pb-4 pt-2 min-h-[480px]">
       {columns.map((col) => {
-        // Filtrar clientes de esta columna
-        const colClients = clients.filter((c) => getClientColumnId(c) === col.id);
+        // Filtrar clientes de esta etapa global
+        const colClients = clients.filter((c) => getClientStageId(c) === col.id);
 
-        // Ordenar clientes prioritariamente por lastDocumentValidationAt (los que validaron antes van primero)
+        // Ordenar prioritariamente por lastDocumentValidationAt (el cliente que validó antes va primero)
         const sortedClients = [...colClients].sort((a, b) => {
           const aTime = a.lastDocumentValidationAt ? new Date(a.lastDocumentValidationAt).getTime() : Infinity;
           const bTime = b.lastDocumentValidationAt ? new Date(b.lastDocumentValidationAt).getTime() : Infinity;
@@ -95,11 +102,11 @@ export default function KanbanBoard({
                       <p className="text-[10px] text-brand-400 truncate">{client.email}</p>
                     </div>
 
-                    {/* Progress details */}
+                    {/* Sub-steps details inside Card */}
                     {totalSteps > 0 && (
                       <div className="space-y-1.5 pt-1">
                         <div className="flex items-center justify-between text-[9px] font-medium text-brand-500">
-                          <span>Progreso de pasos</span>
+                          <span>Documentos validados</span>
                           <span>{completedCount}/{totalSteps}</span>
                         </div>
                         <div className="w-full bg-brand-100 rounded-full h-1">
@@ -112,7 +119,7 @@ export default function KanbanBoard({
                     )}
 
                     {/* Badge alert if waiting for verification */}
-                    {client.steps.some(s => s.status === "Uploaded") && (
+                    {client.steps.some((s) => s.status === "Uploaded") && (
                       <div className="text-[9px] text-blue-700 bg-blue-50 border border-blue-150 px-2 py-1 rounded-lg font-medium inline-block animate-pulse">
                         Documentos subidos esperando revisión
                       </div>

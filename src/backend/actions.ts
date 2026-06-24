@@ -12,6 +12,7 @@ export interface Step {
   isMandatory: boolean;
   shortOrder: number;
   status: string;
+  stageId?: number | null;
   value?: string;
   comments?: string;
   document?: {
@@ -87,6 +88,7 @@ export async function getUsersAction(): Promise<ClientData[]> {
           isMandatory: step.isMandatory,
           shortOrder: step.shortOrder,
           status: progress?.status || "Pending",
+          stageId: step.stageId,
           value: progress?.value || undefined,
           comments: progress?.adminComments || undefined,
           document: progress?.document ? {
@@ -115,6 +117,7 @@ export async function getUsersAction(): Promise<ClientData[]> {
         lastDocumentValidationAt: client.lastDocumentValidationAt
       };
     });
+
 
   } catch (error) {
     console.error("Error in getUsersAction:", error);
@@ -600,6 +603,25 @@ export async function deleteStatusConfigAction(id: string) {
     throw new Error("No se pudo eliminar el estado");
   }
 }
+
+export interface KanbanStageData {
+  id: number;
+  name: string;
+  order: number;
+  description?: string | null;
+}
+
+export async function getKanbanStagesAction(): Promise<KanbanStageData[]> {
+  try {
+    return await prisma.kanbanStage.findMany({
+      orderBy: { order: "asc" }
+    });
+  } catch (error) {
+    console.error("Error in getKanbanStagesAction:", error);
+    return [];
+  }
+}
+
 
 export async function updateUserStepStatusAction(userId: string, stepId: number, status: string) {
   try {

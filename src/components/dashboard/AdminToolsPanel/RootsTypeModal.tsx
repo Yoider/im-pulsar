@@ -23,10 +23,11 @@ interface Step {
   id: number;
   name: string;
   description: string | null;
-  isMandatory: boolean;
-  shortOrder: number;
+  isMandatory?: boolean;
+  shortOrder?: number;
   triggerCondition?: string | null;
   geminiInstructions?: string | null;
+  stageId?: number | null;
 }
 
 interface RootsTypeModalProps {
@@ -136,8 +137,8 @@ export default function RootsTypeModal({
     setEditingStep(step);
     setEditStepName(step.name);
     setEditStepDesc(step.description || "");
-    setEditStepMandatory(step.isMandatory);
-    setEditStepOrder(step.shortOrder);
+    setEditStepMandatory(step.isMandatory ?? false);
+    setEditStepOrder(step.shortOrder ?? 1);
     setEditStepTrigger(step.triggerCondition || "");
     setEditStepGemini(step.geminiInstructions || "");
   };

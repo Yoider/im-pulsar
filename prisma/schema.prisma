@@ -100,7 +100,18 @@ model Step {
   rootsTypesSteps RootsTypesSteps[]
   progress        UserProcessProgress[]
   processHistoryList ProcessHistory[]
+  stageId         Int?
+  stage           KanbanStage?          @relation(fields: [stageId], references: [id], onDelete: SetNull)
 }
+
+model KanbanStage {
+  id          Int      @id @default(autoincrement())
+  name        String
+  order       Int      @default(1)
+  description String?
+  steps       Step[]
+}
+
 
 model RootsTypesSteps {
   id          Int       @id @default(autoincrement())

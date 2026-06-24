@@ -56,10 +56,11 @@ interface Step {
   id: number;
   name: string;
   description: string | null;
-  isMandatory: boolean;
-  shortOrder: number;
+  isMandatory?: boolean;
+  shortOrder?: number;
   triggerCondition?: string | null;
   geminiInstructions?: string | null;
+  stageId?: number | null;
 }
 
 const generateMockNIE = (client: ClientData) => {
@@ -493,10 +494,6 @@ export default function AdminToolsPanel() {
                 </div>
                 <KanbanBoard
                   clients={clients.filter((c) => c.rootsTypeId === activeKanbanRt.id)}
-                  steps={activeKanbanRt.rootsTypesSteps.map((rts) => ({
-                    id: rts.step.id,
-                    name: rts.step.name,
-                  }))}
                   onSelectClient={setSelectedClient}
                   onUpdateStatus={handleUpdateStepStatus}
                 />
