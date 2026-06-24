@@ -475,17 +475,45 @@ export default function AdminToolsPanel() {
 
           {/* Scrollable Content */}
           <div className="flex-grow overflow-y-auto p-6 min-h-0">
-            <AuditoriaSection
-              clients={clients}
-              rootsTypes={rootsTypes}
-              actionLoading={actionLoading}
-              onAssignRootsType={handleAssignRootsType}
-              onSelectClient={setSelectedClient}
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              filterRootsType={filterRootsType}
-              setFilterRootsType={setFilterRootsType}
-            />
+            {activeKanbanRt ? (
+              <div className="animate-fade-in space-y-4">
+                <div className="flex items-center justify-between border-b border-brand-200 pb-3">
+                  <div className="text-left">
+                    <h4 className="text-sm font-bold text-brand-950">Tablero Kanban: {activeKanbanRt.name}</h4>
+                    <p className="text-[10px] text-brand-400">Clientes asignados ordenados por prioridad de carga de documentos.</p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setActiveKanbanRt(null)}
+                    className="h-7 text-[10px] text-brand-700 hover:bg-brand-100 rounded-xl"
+                  >
+                    Cerrar Tablero (Ver Todos)
+                  </Button>
+                </div>
+                <KanbanBoard
+                  clients={clients.filter((c) => c.rootsTypeId === activeKanbanRt.id)}
+                  steps={activeKanbanRt.rootsTypesSteps.map((rts) => ({
+                    id: rts.step.id,
+                    name: rts.step.name,
+                  }))}
+                  onSelectClient={setSelectedClient}
+                  onUpdateStatus={handleUpdateStepStatus}
+                />
+              </div>
+            ) : (
+              <AuditoriaSection
+                clients={clients}
+                rootsTypes={rootsTypes}
+                actionLoading={actionLoading}
+                onAssignRootsType={handleAssignRootsType}
+                onSelectClient={setSelectedClient}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                filterRootsType={filterRootsType}
+                setFilterRootsType={setFilterRootsType}
+              />
+            )}
           </div>
         </div>
 
@@ -567,33 +595,7 @@ export default function AdminToolsPanel() {
 
           {/* Scrollable Content */}
           <div className="flex-grow overflow-y-auto p-6 min-h-0">
-            {activeKanbanRt ? (
-              <div className="animate-fade-in space-y-4">
-                <div className="flex items-center justify-between border-b border-brand-200 pb-3">
-                  <div className="text-left">
-                    <h4 className="text-sm font-bold text-brand-950">Tablero Kanban: {activeKanbanRt.name}</h4>
-                    <p className="text-[10px] text-brand-400">Progreso ordenado por prioridad dinámica de documentos validados.</p>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setActiveKanbanRt(null)}
-                    className="h-7 text-[10px] text-brand-700 hover:bg-brand-100 rounded-xl"
-                  >
-                    Volver a lista
-                  </Button>
-                </div>
-                <KanbanBoard
-                  clients={clients.filter((c) => c.rootsTypeId === activeKanbanRt.id)}
-                  steps={activeKanbanRt.rootsTypesSteps.map((rts) => ({
-                    id: rts.step.id,
-                    name: rts.step.name,
-                  }))}
-                  onSelectClient={setSelectedClient}
-                  onUpdateStatus={handleUpdateStepStatus}
-                />
-              </div>
-            ) : configTab === "expedientes" ? (
+            {configTab === "expedientes" ? (
               <div className="animate-fade-in">
                 <ExpedientesSection
                   rootsTypes={rootsTypes}
